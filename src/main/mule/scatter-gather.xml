@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c42bc5e2-529f-4338-ad79-93ea289ee443" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scatter-gatherFlow" doc:id="4772d445-115b-4fe7-ac01-0f37f4d90d7e" >
+		<http:listener doc:name="Listener" doc:id="6df5e2ac-c193-452a-bf71-d3dd273eb2cd" config-ref="HTTP_Listener_config" path="/scatter"/>
+		<set-payload value="input payload" doc:name="Set Payload" doc:id="5cab3f9d-ec15-4e05-8a63-c0c86c7851b1" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="039af4d6-9b80-49aa-971c-6fcc6fc86acf" maxConcurrency="1">
+			<route >
+				<set-variable value="betty" doc:name="Set Variable" doc:id="a35ef236-429c-41ba-b481-1127ccbea70f" variableName="name"/>
+				<ee:transform doc:name="Transform Message" doc:id="5dfa8a1f-c4f8-4eec-9434-bcf2e5fe1bfd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+'this flow 1']]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+			<route >
+				<set-variable value="gopi" doc:name="Set Variable" doc:id="6696a53d-2ea3-4173-aa1f-f59f732efa8f" variableName="name"/>
+				<ee:transform doc:name="Transform Message" doc:id="ec06b3e2-06cb-4b1a-9a74-912e85b5b5ea" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+'this flow 2']]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="374304f3-8b6a-4c6f-a9f0-ac808ecd7ad8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"output":payload,
+	"variable":vars.name
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
