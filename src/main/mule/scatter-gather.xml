@@ -42,7 +42,8 @@ output application/json
 ---
 {
 	"output":payload,
-	"variable":vars.name
+	"variable":vars.name,
+        "jenkins":"test"
 }
 ]]></ee:set-payload>
 			</ee:message>
